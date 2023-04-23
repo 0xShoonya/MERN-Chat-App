@@ -4,11 +4,7 @@ const jwt = require("jsonwebtoken");
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, confirmPassword, pic } = req.body;
-
-    if (password !== confirmPassword) {
-      return res.status(400).send("Passwords do not match");
-    }
+    const { name, email, password, pic } = req.body;
 
     const user = await User.findOne({ email });
     if (user) {
@@ -22,6 +18,7 @@ exports.registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      pic,
     });
 
     await newUser.save();
@@ -64,7 +61,7 @@ exports.loginUser = async (req, res) => {
     // Create and sign a JWT token
     const payload = { userId: user._id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "3h",
+      expiresIn: "72h",
     });
 
     console.log(payload);
@@ -81,4 +78,19 @@ exports.loginUser = async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
   }
+};
+
+// /api/user?search=honey
+exports.allUsers = async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  res.send(users);
 };
