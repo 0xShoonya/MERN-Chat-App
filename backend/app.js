@@ -15,8 +15,10 @@ app.use(express.json());
 
 //Routes import
 const userRoutes = require("./routes/userRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 app.use("/api/user", userRoutes);
+app.use("/api/chats", chatRoutes);
 
 const PORT = process.env.PORT || 4100;
 app.listen(PORT, () => {
