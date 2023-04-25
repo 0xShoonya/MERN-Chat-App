@@ -17,8 +17,8 @@ const Homepage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if (userInfo && userInfo.data && userInfo.data.user) {
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+    if (user) {
       navigate("/chats");
     }
   }, [navigate]);

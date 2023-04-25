@@ -1,6 +1,6 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const generateToken = require("../config/generateToken");
 
 exports.registerUser = async (req, res) => {
   try {
@@ -50,7 +50,6 @@ exports.loginUser = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -58,22 +57,14 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Create and sign a JWT token
-    const payload = { userId: user._id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "72h",
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+      token: generateToken(user._id),
     });
-
-    console.log(payload);
-
-    // Set token as HttpOnly cookie
-    res.cookie("authToken", token, {
-      httpOnly: true,
-      maxAge: 72 * 60 * 60 * 1000,
-    });
-
-    // Return token to the client
-    return res.json({ token, user, message: "Login successful." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
