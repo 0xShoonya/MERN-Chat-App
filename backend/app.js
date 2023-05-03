@@ -19,7 +19,7 @@ const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 
 app.use("/api/user", userRoutes);
-app.use("/api/chats", chatRoutes);
+app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
 const PORT = process.env.PORT || 4100;
@@ -79,9 +79,9 @@ io.on("connection", (socket) => {
   });
 
   // Listen for the `disconnect` event
-  socket.on("disconnect", () => {
-    // Leave the socket room that was joined by the user during the `setup` event.
-    socket.leave(userData._id);
-    console.log("USER DISCONNECTED");
-  });
+  // socket.on("disconnect", () => {
+  //   // Leave the socket room that was joined by the user during the `setup` event.
+  //   socket.leave(userData._id);
+  //   console.log("USER DISCONNECTED");
+  // });
 });

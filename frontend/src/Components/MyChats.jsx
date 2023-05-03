@@ -1,19 +1,20 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { ChatState } from "../../Context/ChatProvider";
+import { ChatState } from "../Context/ChatProvider";
 import { Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
-import { getSender } from "../../Config/ChatLogics";
+import { getSender } from "../Config/ChatLogics";
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
-import GroupChatModal from "./GroupChatModal";
+import GroupChatModal from "./miscellaneous/GroupChatModal";
 
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
-  const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState();
+  const { user, chats, setChats, selectedChat, setSelectedChat } = ChatState();
 
   const toast = useToast();
 
   const fetchChats = async () => {
+    console.log(user._id);
     try {
       const config = {
         headers: {
@@ -25,17 +26,20 @@ const MyChats = ({ fetchAgain }) => {
         "http://localhost:4100/api/chat",
         config
       );
-      console.log(data);
+
       setChats(data);
+      console.log(data);
+      console.log("hey there");
     } catch (error) {
       toast({
         title: "Error Occured!",
-        description: "Failed to Load the chats",
+        description: error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
         position: "bottom-left",
       });
+      console.error(error);
     }
   };
 

@@ -14,10 +14,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import ChatLoading from "./ChatLoading";
-import UserListItem from "../User Avatar/UserListItem";
+// import ChatLoading from "../ChatLoading";
+import UserListItem from "../UserAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
-import UserBadgeItem from "../User Avatar/userBadgeItem";
+import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import axios from "axios";
 
 const GroupChatModal = ({ children }) => {
@@ -29,7 +29,7 @@ const GroupChatModal = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const { user, chats, setChats } = ChatState;
+  const { user, chats, setChats } = ChatState();
 
   const handleGroup = (userToAdd) => {
     if (selectedUsers.includes(userToAdd)) {
@@ -48,7 +48,7 @@ const GroupChatModal = ({ children }) => {
 
   const handleSearch = async (query) => {
     setSearch(query);
-    if (!query) {
+    if (!query || !user) {
       return;
     }
 
@@ -59,11 +59,16 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      console.log(user);
+      const { data } = await axios.get(
+        `http://localhost:4100/api/user?search=${search}`,
+        config
+      );
       console.log(data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error Occured!",
         description: "Failed to Load the Search Results",
@@ -98,7 +103,7 @@ const GroupChatModal = ({ children }) => {
         },
       };
       const { data } = await axios.post(
-        `/api/chat/group`,
+        `http://localhost:4100/api/chat/group`,
         {
           name: groupChatName,
           users: JSON.stringify(selectedUsers.map((u) => u._id)),
@@ -166,7 +171,7 @@ const GroupChatModal = ({ children }) => {
                 />
               ))}
             </Box>
-            {ChatLoading ? (
+            {loading ? (
               // <ChatLoading />
               <div>Loading...</div>
             ) : (

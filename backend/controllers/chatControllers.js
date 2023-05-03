@@ -28,7 +28,7 @@ exports.accessChat = async (req, res) => {
   if (isChat.length > 0) {
     res.send(isChat[0]);
   } else {
-    var chatData = {
+    let chatData = {
       chatName: "sender",
       isGroupChat: false,
       users: [req.user._id, userId],
@@ -49,6 +49,7 @@ exports.accessChat = async (req, res) => {
 
 //Fetch all chats for a user
 exports.fetchChats = async (req, res) => {
+  let results;
   try {
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
       .populate("users", "-password")
@@ -60,9 +61,8 @@ exports.fetchChats = async (req, res) => {
           path: "latestMessage.sender",
           select: "name pic email",
         });
+        res.status(200).send(results);
       });
-
-    res.status(200).send(results);
   } catch (error) {
     res.status(400);
     throw new Error(error.message);
